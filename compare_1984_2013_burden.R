@@ -45,7 +45,7 @@ prop.death.all.cases = rep(prop.death.all.cases, each = 34)
 
 
 
-
+#######################################################
 # import burden FOI model
 
 foi_dir = paste(homedir, "script_MCMC/post_GAVI_runs_FOI_model/best_estimates/", sep="")
@@ -73,22 +73,26 @@ for(adm in c34){
 }
 
 
+
+#######################################################
 # import 1984-2013 burden R0 model
-setwd(paste(homedir, "script_MCMC_herd_immunity/post_GAVI_round/Thu_Mar_10_20164compartiments_finalMCMC_nb_runs=1000/best_estimates", sep=""))
-tab = read.csv("cases_by_year_adm0_nb_runs=1000.csv", h=T)
+r0_dir = paste(homedir, "script_MCMC_herd_immunity/post_GAVI_round/Thu_Mar_10_20164compartiments_finalMCMC_nb_runs=1000/best_estimates/", sep="")
+tab = read.csv(paste0(r0_dir,"cases_by_year_adm0_nb_runs=1000.csv"), h=T)
 dim(tab)
 colnames(tab)
 tab= tab[,-2]
 tab[,2:ncol(tab)]=prop.death.all.cases*tab[,2:ncol(tab)] # apply CFR
 
-burd_mean_R0 = burd_inf_R0 = burd_sup_R0 = NULL
+burd_mean_R0 = burd_med_R0 = burd_inf_R0 = burd_sup_R0 = NULL
 for(adm in c34){
   print(adm)
   temp = tab[tab$adm0 == adm,]
   mean_tmp = apply(temp[,-1], 2, mean)
+  med_tmp = apply(temp[,-1], 2, median)
   low_tmp = apply(temp[,-1], 2, quantile, probs=0.025)
   sup_tmp = apply(temp[,-1], 2,  quantile, probs=0.975)
   burd_mean_R0 = rbind(burd_mean_R0, mean_tmp)
+  burd_med_R0 = rbind(burd_med_R0, med_tmp)
   burd_inf_R0 = rbind(burd_inf_R0, low_tmp)
   burd_sup_R0 = rbind(burd_sup_R0, sup_tmp)
 }
