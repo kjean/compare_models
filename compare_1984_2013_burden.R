@@ -17,6 +17,7 @@ if (computer==0) { homedir<-"Y:/Kevin/"
 shpdir = paste(homedir,"shapefiles/gadm2/",sep="")
 commondir = paste(homedir,"re-fit models 2016/", sep="")
 currdir = paste(homedir,"re-fit_models_2016/", "compare_models/", sep="")
+outdir = paste0(currdir, "outputs_figures/")
 
 setwd(currdir)
 
@@ -43,6 +44,11 @@ prop.death.all.cases = rlnorm(1000, meanlog= -3.00, sdlog=0.442)
 prop.death.all.cases = ifelse(prop.death.all.cases>1,1,prop.death.all.cases)
 prop.death.all.cases = rep(prop.death.all.cases, each = 34)
 
+# severe cases distrib
+set.seed(101)
+prop.severe = rlnorm(1000,meanlog=-2.222, sdlog=0.427)
+prop.severe = ifelse(prop.severe>1,1, prop.severe)
+prop.severe = rep(prop.severe, each = 34)
 
 
 #######################################################
@@ -55,7 +61,7 @@ colnames(tab)
 head(tab[,1:4])
 tab = tab[,-2]
 colnames(tab)
-tab[,2:ncol(tab)]=prop.death.all.cases*tab[,2:ncol(tab)] # apply CFR
+tab[,2:ncol(tab)]=prop.severe*tab[,2:ncol(tab)] # apply CFR
 
 
 burd_mean_foi = burd_med_foi = burd_inf_foi = burd_sup_foi = NULL
@@ -81,7 +87,7 @@ tab = read.csv(paste0(r0_dir,"cases_by_year_adm0_nb_runs=1000.csv"), h=T)
 dim(tab)
 colnames(tab)
 tab= tab[,-2]
-tab[,2:ncol(tab)]=prop.death.all.cases*tab[,2:ncol(tab)] # apply CFR
+tab[,2:ncol(tab)]=prop.severe*tab[,2:ncol(tab)] # apply CFR
 
 burd_mean_R0 = burd_med_R0 = burd_inf_R0 = burd_sup_R0 = NULL
 for(adm in c34){
@@ -97,3 +103,41 @@ for(adm in c34){
   burd_sup_R0 = rbind(burd_sup_R0, sup_tmp)
 }
 
+
+
+######################################################
+### select burden years
+
+### select 1984-2013
+colnames(burd_mean_foi)[1:30]
+burd_foi = burd_mean_foi[,1:30]
+burd_foi_inf = burd_inf_foi[,1:30]
+burd_foi_sup = burd_sup_foi[,1:30]
+
+burd_R0 = burd_mean_R0[,1:30]
+burd_R0_inf = burd_inf_R0[,1:30]
+burd_R0_sup = burd_sup_R0[,1:30]
+
+
+
+burd_tot_foi = colSums(burd_foi)
+burd_tot_foi_inf= colSums(burd_foi_inf)
+burd_tot_foi_sup = colSums(burd_foi_sup)
+
+burd_tot_R0 = colSums(burd_R0)
+burd_tot_R0_inf= colSums(burd_R0_inf)
+burd_tot_R0_sup = colSums(burd_R0_sup)
+
+burd_tot = rbind(burd_tot_foi, burd_tot_R0)
+colnames(burd_tot) = 1984:2013
+burd_tot_inf = rbind(burd_tot_foi_inf, burd_tot_R0_inf)
+burd_tot_sup = rbind(burd_tot_foi_sup, burd_tot_R0_sup)
+
+
+
+png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013.png"), width=12,height=5,units="in",res=200)
+mycols= colorRampPalette(brewer.pal(2,"Paired"))(2)
+barplot2(burd_tot/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf/1000, ci.u=burd_tot_sup/1000, col=mycols,
+         ylab = "Deaths (thousand)", ylim= c(0,450), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
+legend("topright", legend=c( "Static model", "Dynamic model"), fill = mycols)
+dev.off()
