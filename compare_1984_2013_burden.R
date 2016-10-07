@@ -161,10 +161,11 @@ burd_tot_5y = rbind(burd_tot_foi_5y, burd_tot_R0_5y)
 burd_tot_inf_5y = rbind(burd_tot_foi_inf_5y, burd_tot_R0_inf_5y)
 burd_tot_sup_5y = rbind(burd_tot_foi_sup_5y, burd_tot_R0_sup_5y)
 colnames(burd_tot_5y) = colnames( burd_tot_inf_5y) = colnames( burd_tot_sup_5y) = c("1983-1987", "1988-1992", "1993-1997", "1998-2002", "2003-2007", "2008-2013")
+#vec_years = c("1983-1987", "1988-1992", "1993-1997", "1998-2002", "2003-2007", "2008-2013")
 
 png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013_by5y.png"), width=8,height=7,units="in",res=200)
 mycols= colorRampPalette(brewer.pal(2,"Paired"))(2)
-barplot2(burd_tot_5y/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf_5y/1000, ci.u=burd_tot_sup_5y/1000, col=mycols,angle=45,
+b = barplot2(burd_tot_5y/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf_5y/1000, ci.u=burd_tot_sup_5y/1000, col=mycols,angle=45,
          ylab = "Severe cases (thousand)", ylim= c(0,4000), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
 legend("topright", legend=c( "Static model", "Dynamic model"), fill = mycols)
 dev.off()
