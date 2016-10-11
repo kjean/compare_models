@@ -160,7 +160,7 @@ burd_tot_R0_sup_5y=aggregate(x=burd_tot_R0_sup, by=ylist, FUN=sum)$x
 burd_tot_5y = rbind(burd_tot_foi_5y, burd_tot_R0_5y)
 burd_tot_inf_5y = rbind(burd_tot_foi_inf_5y, burd_tot_R0_inf_5y)
 burd_tot_sup_5y = rbind(burd_tot_foi_sup_5y, burd_tot_R0_sup_5y)
-colnames(burd_tot_5y) = colnames( burd_tot_inf_5y) = colnames( burd_tot_sup_5y) = c("1983-1987", "1988-1992", "1993-1997", "1998-2002", "2003-2007", "2008-2013")
+colnames(burd_tot_5y) = colnames( burd_tot_inf_5y) = colnames( burd_tot_sup_5y) = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
 #vec_years = c("1983-1987", "1988-1992", "1993-1997", "1998-2002", "2003-2007", "2008-2013")
 
 png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013_by5y.png"), width=8,height=7,units="in",res=200)
