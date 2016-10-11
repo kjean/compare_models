@@ -29,3 +29,15 @@ setwd(currdir)
 #### read outbreak data
 outbreak = read.csv(paste0(outbreakdir, "outbreaks_1960s-2014_KJ.csv"), h=T, stringsAsFactors = F)
 str(outbreak)
+outbreak$year = as.numeric(outbreak$year)
+table(outbreak$year, exclude = NULL)
+outbreak = outbreak[outbreak$year >1983 & outbreak$year<2014,]
+length(table(outbreak$year))
+hist(outbreak$year)
+outbreak$year_5 = cut(outbreak$year, breaks = c(1983,1988, 1993, 1998, 2003, 2008, 2013))
+table(outbreak$year_5)
+
+tab5 = t(matrix(table(outbreak$year_5)))
+colnames( tab5) = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
+mycol= colorRampPalette(brewer.pal(4,"Paired"))(4)[4]
+barplot2(tab5, col = mycol)
