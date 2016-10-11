@@ -40,4 +40,4 @@ table(outbreak$year_5)
 tab5 = t(matrix(table(outbreak$year_5)))
 colnames( tab5) = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
 mycol= colorRampPalette(brewer.pal(4,"Paired"))(4)[4]
-barplot2(tab5, col = mycol)
+barplot(tab5, col = mycol,  ylab = "Number of outbreaks reported", width=0.2, space = 0.2)
