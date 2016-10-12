@@ -169,3 +169,28 @@ b = barplot2(burd_tot_5y/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf_5y/1000,
          ylab = "Severe cases (thousand)", ylim= c(0,4000), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
 legend("topright", legend=c( "Static model", "Dynamic model"), fill = mycols)
 dev.off()
+
+
+
+### by 3y band
+ylist = list(rep(1:10, each=3))
+burd_tot_foi_3y =aggregate(x=burd_tot_foi, by=ylist, FUN=sum)$x
+burd_tot_foi_inf_3y=aggregate(x=burd_tot_foi_inf, by=ylist, FUN=sum)$x
+burd_tot_foi_sup_3y=aggregate(x=burd_tot_foi_sup, by=ylist, FUN=sum)$x
+
+burd_tot_R0_3y =aggregate(x=burd_tot_R0, by=ylist, FUN=sum)$x
+burd_tot_R0_inf_3y=aggregate(x=burd_tot_R0_inf, by=ylist, FUN=sum)$x
+burd_tot_R0_sup_3y=aggregate(x=burd_tot_R0_sup, by=ylist, FUN=sum)$x
+
+burd_tot_3y = rbind(burd_tot_foi_3y, burd_tot_R0_3y)
+burd_tot_inf_3y = rbind(burd_tot_foi_inf_3y, burd_tot_R0_inf_3y)
+burd_tot_sup_3y = rbind(burd_tot_foi_sup_3y, burd_tot_R0_sup_3y)
+colnames(burd_tot_3y) = colnames( burd_tot_inf_3y) = colnames( burd_tot_sup_3y) = c("1984-1986", "1987-1989", "1990-1992", "1993-1995", "1996-1998", "1999-2001","2002-2004", "2005-2007", "2008-2010", "2011-2013")
+#vec_years = c("1983-1987", "1988-1992", "1993-1997", "1998-2002", "2003-2007", "2008-2013")
+
+png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013_by3y.png"), width=8,height=7,units="in",res=200)
+mycols= colorRampPalette(brewer.pal(2,"Paired"))(2)
+b = barplot2(burd_tot_3y/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf_3y/1000, ci.u=burd_tot_sup_3y/1000, col=mycols,angle=45,
+             ylab = "Severe cases (thousand)", ylim= c(0,4000), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
+legend("topright", legend=c( "Static model", "Dynamic model"), fill = mycols)
+dev.off()
