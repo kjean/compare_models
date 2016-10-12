@@ -34,10 +34,22 @@ table(outbreak$year, exclude = NULL)
 outbreak = outbreak[outbreak$year >1983 & outbreak$year<2014,]
 length(table(outbreak$year))
 hist(outbreak$year)
-outbreak$year_5 = cut(outbreak$year, breaks = c(1983,1988, 1993, 1998, 2003, 2008, 2013))
-table(outbreak$year_5)
+
+# by 5y band
+outbreak$year_3 = cut(outbreak$year, breaks = c(1983,1986, 1989, 1992, 1995, 1998, 2001, 2004, 2007, 2010, 2013))
+table(outbreak$year_3)
 
 tab5 = t(matrix(table(outbreak$year_5)))
 colnames( tab5) = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
 mycol= colorRampPalette(brewer.pal(4,"Paired"))(4)[4]
 barplot(tab5, col = mycol,  ylab = "Number of outbreaks reported", width=0.2, space = 0.2)
+
+
+# by 3y band
+outbreak$year_3 = cut(outbreak$year, breaks = c(1983,1988, 1993, 1998, 2003, 2008, 2013))
+table(outbreak$year_3)
+
+tab3 = t(matrix(table(outbreak$year_3)))
+colnames( tab3) = c("1984-1986", "1987-1989", "1990-1992", "1993-1995", "1996-1998", "1999-2001","2002-2004", "2005-2007", "2008-2010", "2011-2013")
+mycol= colorRampPalette(brewer.pal(4,"Paired"))(4)[4]
+barplot(tab3, col = mycol,  ylab = "Number of outbreaks reported", width=0.2, space = 0.2)
