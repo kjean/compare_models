@@ -18,9 +18,10 @@ if (computer==0) { homedir<-"Y:/Kevin/"
 }
 
 shpdir = paste(homedir,"shapefiles/gadm2/",sep="")
-commondir = paste(homedir,"re-fit models 2016/", sep="")
+commondir = paste(homedir,"re-fit_models_2016/", sep="")
 currdir = paste(homedir,"re-fit_models_2016/", "compare_models/", sep="")
 outdir = paste0(currdir, "outputs_figures/")
+outbreakdir = paste0(homedir, "Outbreak and vaccination/")
 
 setwd(currdir)
 
@@ -40,6 +41,22 @@ c34 = c("AGO", "BDI", "BEN", "BFA", "CAF", "CIV", "CMR", "COD", "COG", "ERI", "E
 country34 = c("Angola","Burundi","Benin","Burkina Faso","Central African Republic","Côte d'Ivoire","Cameroon","Democratic Republic of the Congo","Republic of Congo","Eritrea","Ethiopia","Gabon","Ghana","Guinea","Gambia","Guinea-Bissau","Equatorial Guinea","Kenya","Liberia","Mali","Mauritania","Niger","Nigeria","Rwanda","Sudan","Senegal","Sierra Leone","Somalia", "South Sudan", "Chad","Togo","Tanzania","Uganda", "Zambia") 
 
 
+################ outbreak data
+#### read outbreak data
+outbreak = read.csv(paste0(outbreakdir, "outbreaks_1960s-2014_KJ.csv"), h=T, stringsAsFactors = F)
+str(outbreak)
+outbreak$year = as.numeric(outbreak$year)
+table(outbreak$year, exclude = NULL)
+outbreak = outbreak[outbreak$year >1983 & outbreak$year<2014,]
+length(table(outbreak$year))
+hist(outbreak$year)
+
+
+
+
+
+
+
 
 ####### CFR distrib
 set.seed(101)
@@ -57,12 +74,12 @@ prop.severe = rep(prop.severe, each = 34)
 #######################################################
 # import burden FOI model
 
-foi_dir = paste(homedir, "script_MCMC/post_GAVI_runs_FOI_model/best_estimates/", sep="")
-tab = read.csv(paste0(foi_dir,"cases_by_year_adm0_nb_runs=1000.csv"), h=T)
+foi_dir = paste0(commondir, "YF_FOI_burden_model/")
+tab = read.csv(paste0(foi_dir,"all_cases_FOI_best_estimate_nb_runs=1000_by_year_.csv"), h=T)
 dim(tab)
 colnames(tab)
 head(tab[,1:4])
-tab = tab[,-2]
+#tab = tab[,-2]
 colnames(tab)
 tab[,2:ncol(tab)]=prop.severe*tab[,2:ncol(tab)] # apply CFR
 
@@ -160,14 +177,33 @@ burd_tot_R0_sup_5y=aggregate(x=burd_tot_R0_sup, by=ylist, FUN=sum)$x
 burd_tot_5y = rbind(burd_tot_foi_5y, burd_tot_R0_5y)
 burd_tot_inf_5y = rbind(burd_tot_foi_inf_5y, burd_tot_R0_inf_5y)
 burd_tot_sup_5y = rbind(burd_tot_foi_sup_5y, burd_tot_R0_sup_5y)
-colnames(burd_tot_5y) = colnames( burd_tot_inf_5y) = colnames( burd_tot_sup_5y) = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
-#vec_years = c("1983-1987", "1988-1992", "1993-1997", "1998-2002", "2003-2007", "2008-2013")
+#colnames(burd_tot_5y) = colnames( burd_tot_inf_5y) = colnames( burd_tot_sup_5y) = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
+vec_years = c("1984-1988", "1989-1993", "1994-1998", "1999-2003", "2004-2008", "2009-2013")
 
-png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013_by5y.png"), width=8,height=7,units="in",res=200)
+
+# outbreak data by 5y band
+outbreak$year_5 = cut(outbreak$year, breaks = c(1983,1988, 1993, 1998, 2003, 2008, 2013))
+table(outbreak$year_5)
+tab5 = t(matrix(table(outbreak$year_5)))
+
+
+png(paste0(outdir,"compare_burden_2_models_1984-2013_by5y_w_outbreaks.png"), width=9,height=5,units="in",res=200)
+par(oma=c(0,4,0,4))
 mycols= colorRampPalette(brewer.pal(2,"Paired"))(2)
 b = barplot2(burd_tot_5y/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf_5y/1000, ci.u=burd_tot_sup_5y/1000, col=mycols,angle=45,
-         ylab = "Severe cases (thousand)", ylim= c(0,4000), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
-legend("topright", legend=c( "Static model", "Dynamic model"), fill = mycols)
+         ylab = "", ylim= c(0,4000), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
+text(apply(b, 2, mean)+0.5, par("usr")[3]-100, srt = 45, adj= 1, xpd = TRUE,
+     labels = vec_years, cex=1)
+tab5_rescalled = tab5*3500/118
+points(apply(b, 2, mean), tab5_rescalled, type="l", col="tomato", lwd=2 )
+points(apply(b, 2, mean), tab5_rescalled, pch=19, col="tomato", lwd=2)
+ticks_ax_2 = c(0,25,50,75,100,125)
+ticks_ax_2_scaled = ticks_ax_2*3500/118
+axis(side=4, at=ticks_ax_2_scaled, labels=FALSE, col="tomato", lwd=2)
+text(x =par("usr")[2]+0.7, y = ticks_ax_2_scaled,  labels = ticks_ax_2,col="tomato", xpd=T)
+legend(par("usr")[1]+1, par("usr")[4]-100, legend=c( "Static model", "Dynamic model"), fill = mycols)
+mtext(side=2, "Estimated nb of severe cases", outer=T,cex=1.3, font=2)
+mtext(side=4, "Number of outbreaks reported", outer=T, line=0.7, cex=1.3, font=2, col="tomato")
 dev.off()
 
 
