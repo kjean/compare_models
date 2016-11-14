@@ -102,11 +102,11 @@ for(adm in c34){
 
 #######################################################
 # import 1984-2013 burden R0 model
-r0_dir = paste(homedir, "script_MCMC_herd_immunity/post_GAVI_round/Thu_Mar_10_20164compartiments_finalMCMC_nb_runs=1000/best_estimates/", sep="")
-tab = read.csv(paste0(r0_dir,"cases_by_year_adm0_nb_runs=1000.csv"), h=T)
+r0_dir =  paste0(commondir, "YF_R0_burden_model/")
+tab = read.csv(paste0(r0_dir,"all_cases_R0_best_estimate_nb_runs=1000_by_year_.csv"), h=T)
 dim(tab)
 colnames(tab)
-tab= tab[,-2]
+#tab= tab[,-2]
 tab[,2:ncol(tab)]=prop.severe*tab[,2:ncol(tab)] # apply CFR
 
 burd_mean_R0 = burd_med_R0 = burd_inf_R0 = burd_sup_R0 = NULL
