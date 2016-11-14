@@ -155,7 +155,7 @@ burd_tot_sup = rbind(burd_tot_foi_sup, burd_tot_R0_sup)
 
 
 
-png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013.png"), width=12,height=5,units="in",res=200)
+png(paste0(outdir,"compare_burden_2_models_global_best_estim_1984-2013_updated.png"), width=12,height=5,units="in",res=200)
 mycols= colorRampPalette(brewer.pal(2,"Paired"))(2)
 barplot2(burd_tot/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf/1000, ci.u=burd_tot_sup/1000, col=mycols,
          ylab = "Severe cases (thousand)", ylim= c(0,850), las=2, main = "YF Burden, 1984-2013", cex.main=1.4, space = c(0,0.65))
@@ -187,7 +187,7 @@ table(outbreak$year_5)
 tab5 = t(matrix(table(outbreak$year_5)))
 
 
-png(paste0(outdir,"compare_burden_2_models_1984-2013_by5y_w_outbreaks.png"), width=9,height=5,units="in",res=200)
+png(paste0(outdir,"compare_burden_2_models_1984-2013_by5y_w_outbreaks_updated.png"), width=9,height=5,units="in",res=200)
 par(oma=c(0,4,0,4))
 mycols= colorRampPalette(brewer.pal(2,"Paired"))(2)
 b = barplot2(burd_tot_5y/1000, beside=T, plot.ci=T, ci.l = burd_tot_inf_5y/1000, ci.u=burd_tot_sup_5y/1000, col=mycols,angle=45,
