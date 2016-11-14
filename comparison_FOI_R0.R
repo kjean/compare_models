@@ -17,16 +17,17 @@ library(RColorBrewer)
 # 0: labo, 1: portable
 computer<-3
 if (computer==0) { homedir<-"Y:/Kevin/"
-} else if (computer==1) { homedir<-"C:" 
+} else if (computer==1) { homedir<-"C:"
 } else if (computer==2) { homedir<-"//fi--didenas1/yf/Kevin/"
 } else if (computer==3) { homedir<-"C:/Users/Kevin JEAN/Desktop/Recherche/Yellow_Fever/Kevin_YF_DIDE_share_drive/"
 } else if (computer==4) { homedir<-"E:/Imperial/YF share drive/Kevin/"
 } else if (computer==5) { homedir<-"/media/kevinNFS/"
 }
 
-
 shpdir = paste(homedir,"shapefiles/gadm2/",sep="")
-currdir = paste(homedir,"script_MCMC/",sep="")
+commondir = paste(homedir,"re-fit_models_2016/", sep="")
+currdir = paste(homedir,"re-fit_models_2016/compare_models", sep="")
+
 
 
 shp0 = readShapePoly(paste(shpdir, "Africa_adm0.shp",sep=""))
@@ -36,24 +37,17 @@ shp1$adm0_adm1<-paste(shp1$ISO, shp1$ID_1, sep="_")
 shp1 = shp1[order(shp1$adm0_adm1),]
 
 setwd(currdir)
-load("updated_model_without_herd_data.Rdata")
+#load("updated_model_without_herd_data.Rdata")
 
 
-# 0: labo, 1: portable
-computer<-3
-if (computer==0) { homedir<-"Y:/Kevin/"
-} else if (computer==1) { homedir<-"C:" 
-} else if (computer==2) { homedir<-"//fi--didenas1/yf/Kevin/"
-} else if (computer==3) { homedir<-"C:/Users/Kevin JEAN/Desktop/Recherche/Yellow_Fever/Kevin_YF_DIDE_share_drive/"
-} else if (computer==4) { homedir<-"E:/Imperial/YF share drive/Kevin/"
-} else if (computer==5) { homedir<-"/media/kevinNFS/"
-}
-currdir = paste(homedir,"script_MCMC/",sep="")
 ########
 # FOI
-setwd(paste(currdir,'post_GAVI_runs_FOI_model/Fri_Feb_12_2016finalMCMC_nb_runs=1000', sep=''))
+foi_dir =paste(commondir,'YF_FOI_burden_model/MCMC_FOI_nb_runs=1000_20161025', sep='')
+setwd(foi_dir)
 
-vec = 2:400
+load("../workspace_FOI_model_mcmc.Rdata")
+
+vec = 2:250
 foi_africa= NULL
 file=paste('FOI_bb',1,'.csv', sep='' )
 foi_africa = read.csv(file, stringsAsFactors=F)
@@ -83,8 +77,8 @@ foi_quantiles = data.frame(median =foi_med , low=foi_low, sup=foi_sup)
 
 #####
 #R0
-currdir = paste(homedir,"script_MCMC_herd_immunity/last_version_11_Feb",sep="")
-setwd(paste(currdir,'/Thu_Feb_11_20164compartiments_finalMCMC_nb_runs=1000', sep=''))
+R0_dir = paste(commondir,"YF_R0_burden_model/finalMCMC_R0_nb_runs=1000_20161028",sep="")
+setwd(R0_dir)
 
 R0_africa= NULL
 file=paste('R0_bb',1,'.csv', sep='' )
@@ -118,7 +112,7 @@ R0_quantiles = data.frame(median =R0_med , low=R0_low, sup=R0_sup)
 
 
 
-setwd(paste(homedir, "MCMC_compare_both_models/", sep=""))
+setwd(paste(currdir, "/outputs_figures/", sep=""))
 
 png("map_FOI_R0.png", width=18,height=9,units="in",res=400)
 
@@ -311,6 +305,11 @@ dev.off()
 
 
 
+
+
+#############################################################################
+########### R0 translated into FOI
+#############################################################################
 
 
 
