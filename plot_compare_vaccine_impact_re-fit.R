@@ -26,24 +26,9 @@ outbreakdir = paste0(homedir, "Outbreak and vaccination/")
 setwd(currdir)
 
 
-
-scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns_NoGAVI", "prev_campaigns", "routine_NoGAVI","routine" )
-
-# scenar_type = "no_vaccine"
-#scenar_type = "response"
-#scenar_type = "prev_campaigns_NoGAVI"
-#scenar_type = "prev_campaigns"
-#scenar_type = "routine_NoGAVI"
-#scenar_type = "routine"
-
-computer<-2
-if (computer==0) { homedir<-"Y:/Kevin/"
-} else if (computer==1) { homedir<-"C:" 
-} else if (computer==2) { homedir<-"//fi--didenas1/yf/Kevin/"}
-
-
-shpdir = paste(homedir,"shapefiles/gadm2/",sep="")
-currdir = paste(homedir,"GAVI 2015 estimates/", sep="")
+########################################
+########################################
+scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns", "routine", "best_estimate" )
 
 
 c34 = c("AGO", "BDI", "BEN", "BFA", "CAF", "CIV", "CMR", "COD", "COG", "ERI", "ETH", "GAB", "GHA", "GIN", "GMB", "GNB", "GNQ", "KEN", "LBR", "MLI", "MRT", "NER", "NGA", "RWA", "SDN", "SEN", "SLE", "SOM", "SSD", "TCD", "TGO", "TZA", "UGA", "ZMB")
@@ -53,6 +38,7 @@ country34 = c("Angola","Burundi","Benin","Burkina Faso","Central African Rep.","
 set.seed(101)
 prop.death.all.cases = rlnorm(1000, meanlog= -3.00, sdlog=0.442)
 prop.death.all.cases = rep(prop.death.all.cases, each = 34)
+
 
 ########################################
 #### VACCINATION IMPACT
@@ -68,7 +54,7 @@ prop.death.all.cases = rep(prop.death.all.cases, each = 34)
 
 calculate_vaccine_impact = function(scenar, global_country="country", model){
   
-  scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns_NoGAVI", "prev_campaigns", "routine_NoGAVI","routine" )
+  scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns", "routine",  "best_estimate")
   if( !(scenar %in% scenar_type_vec) ){
     stop("Wrong scenar type; choose in <no_vaccine>,  <response>, <prev_campaigns_NoGAVI>, <prev_campaigns>, <routine_NoGAVI>,<routine> ")
   }
@@ -83,21 +69,10 @@ calculate_vaccine_impact = function(scenar, global_country="country", model){
   prop.death.all.cases = rlnorm(1000, meanlog= -3.00, sdlog=0.442)
   prop.death.all.cases = rep(prop.death.all.cases, each = 34)
   
-  if(scenar == "no_vaccine"){year_cut1 = 2000 
-  } else if(scenar == "response"){
-    year_cut1 = 2017
-  } else if(scenar == "prev_campaigns_NoGAVI" | scenar =="prev_campaigns"){
-    year_cut1 = 2023
-  } else if(scenar == "routine_NoGAVI" | scenar =="routine"){
-    year_cut1 = 2030
-  }
-  
-  if(model=="R0"){
-    tab = read.csv(paste(currdir, "R0_model/",scenar, "/all_cases_", scenar, "_", year_cut1, "_nb_runs=1000_by_year_R0", ".csv", sep=""), h=T)
-  } else if(model=="FOI"){
-    tab = read.csv(paste(currdir, "FOI_model/",scenar, "/all_cases_", scenar, "_", year_cut1, "_nb_runs=1000_by_year_", ".csv", sep=""), h=T)
-  }
-  
+
+  tab = read.csv(paste(commondir, "YF_", model, "_burden_model/burden_output/all_cases_", model, "_", scenar, "_nb_runs=1000_by_year.csv",
+                         sep = ""), h=T)
+
   tab[,2:ncol(tab)]=prop.death.all.cases*tab[,2:ncol(tab)]
   nbruns = rep(1:1000, each=34)
   
