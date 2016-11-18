@@ -124,7 +124,7 @@ calculate_vaccine_impact = function(scenar, global_country="country", model){
 # same function but can specify years of calculation
 calculate_vaccine_impact_specify_years = function(scenar, global_country="country", model, years){
   
-  scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns_NoGAVI", "prev_campaigns", "routine_NoGAVI","routine" )
+  scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns", "routine",  "best_estimate")
   if( !(scenar %in% scenar_type_vec) ){
     stop("Wrong scenar type; choose in <no_vaccine>,  <response>, <prev_campaigns_NoGAVI>, <prev_campaigns>, <routine_NoGAVI>,<routine> ")
   }
@@ -139,20 +139,9 @@ calculate_vaccine_impact_specify_years = function(scenar, global_country="countr
   prop.death.all.cases = rlnorm(1000, meanlog= -3.00, sdlog=0.442)
   prop.death.all.cases = rep(prop.death.all.cases, each = 34)
   
-  if(scenar == "no_vaccine"){year_cut1 = 2000 
-  } else if(scenar == "response"){
-    year_cut1 = 2017
-  } else if(scenar == "prev_campaigns_NoGAVI" | scenar =="prev_campaigns"){
-    year_cut1 = 2023
-  } else if(scenar == "routine_NoGAVI" | scenar =="routine"){
-    year_cut1 = 2030
-  }
+  tab = read.csv(paste(commondir, "YF_", model, "_burden_model/burden_output/all_cases_", model, "_", scenar, "_nb_runs=1000_by_year.csv",
+                       sep = ""), h=T)
   
-  if(model=="R0"){
-    tab = read.csv(paste(currdir, "R0_model/",scenar, "/all_cases_", scenar, "_", year_cut1, "_nb_runs=1000_by_year_R0", ".csv", sep=""), h=T)
-  } else if(model=="FOI"){
-    tab = read.csv(paste(currdir, "FOI_model/",scenar, "/all_cases_", scenar, "_", year_cut1, "_nb_runs=1000_by_year_", ".csv", sep=""), h=T)
-  }
   colnames(tab) = c("adm0", 2001:2100)
   mm.years = match(years, colnames(tab))
   
@@ -199,6 +188,33 @@ calculate_vaccine_impact_specify_years = function(scenar, global_country="countr
                      burden_90_low=burden_90_low, burden_90_sup=burden_90_sup)  
   
   return(burden_list)
+}
+
+
+########
+# function to compare 2 scenarios
+
+calc_diff_impact_scenar = function(scenar, counter_scenar, global_country="country", model, years){
+  # counter_scenar is the counterfactual scenario
+  scenar_type_vec = c("no_vaccine",  "response", "prev_campaigns", "routine",  "best_estimate")
+  if( !(scenar %in% scenar_type_vec) | !(counter_scenar %in% scenar_type_vec) ){
+    stop("Wrong scenar type; choose in <no_vaccine>,  <response>, <prev_campaigns_NoGAVI>, <prev_campaigns>, <routine_NoGAVI>,<routine> ")
+  }
+  
+  burden = calculate_vaccine_impact_specify_years(scenar=scenar, global_country=global_country, model=model, years=years )
+  counter_burden = calculate_vaccine_impact_specify_years(scenar=counter_scenar, global_country=global_country, model=model, years=years )
+ 
+  diff_burden_mean =  counter_burden$burden_mean - burden$burden_mean
+  diff_burden_median =  counter_burden$burden_median - burden$burden_median
+  diff_burden_95_low = counter_burden$burden_95_low - burden$burden_95_low
+  diff_burden_95_sup = counter_burden$burden_95_sup - burden$burden_95_sup
+  diff_burden_90_low = counter_burden$burden_90_low - burden$burden_90_low
+  diff_burden_90_sup = counter_burden$burden_90_sup - burden$burden_90_sup
+  
+  diff_burden_list = list(diff_burden_mean = diff_burden_mean, diff_burden_median=diff_burden_median, diff_burden_95_low=diff_burden_95_low, diff_burden_95_sup=diff_burden_95_sup,
+                          diff_burden_90_low=diff_burden_90_low, diff_burden_90_sup=diff_burden_90_sup)  
+ 
+  return(diff_burden_list) 
 }
 
 
